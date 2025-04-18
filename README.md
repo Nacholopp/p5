@@ -10,8 +10,8 @@ a los usuarios leer, modificar y borrar sus datos. También existe un endpoint p
 
 | Método | Ruta          | Descripción                                                                      | Respuestas                                |
 |--------|---------------|----------------------------------------------------------------------------------|-------------------------------------------|
-| POST   | /api/register | Registrar un nuevo User                                                          | 201 created , 400 Bad Request             |
-| POST   | /api/login    | Inicia sesión a un usuario y crea y devuelve la cookie de sesion                 | 200 OK , 401 Unauthorized                 |
+| POST   | /api/users    | Registrar un nuevo User                                                          | 201 created , 400 Bad Request             |
+| POST   | /api/users/me/session    | Inicia sesión a un usuario y crea y devuelve la cookie de sesion                 | 200 OK , 401 Unauthorized                 |
 | POST   | /api/logout   | Cierra sesion y elimina la cookie (es post porque cambia el estado de la sesion) | 200 OK  , 401 Unauthorized                |
 | GET    | /api/user     | Obtiene los datos del usuario autenticado                                        | 200 OK  , 401 Unauthorized                |
 | PUT    | /api/user     | Modifica los datos de un usuario                                                 | 200 OK, 400 Bad Request ,401 Unauthorized |
