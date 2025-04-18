@@ -29,7 +29,7 @@ public class Token {
     @Column(name = "ID")
     @Id @GeneratedValue(strategy = GenerationType.UUID) public String id;
 
-    @JoinColumn(name = "appUser", referencedColumnName = "ID", nullable = false) //Crea la columna de clave foránea de appUser, es decir coge la clave principal y la asocia a esta columna
+    @JoinColumn(name = "APP_USER_ID", referencedColumnName = "ID", nullable = false) //Crea la columna de clave foránea de appUser, es decir coge la clave principal y la asocia a esta columna
     @OneToOne //sin especificar el tipo de fetch
     @OnDelete(action = OnDeleteAction.CASCADE) //Elimina el Token si el AppUser es eliminado
     private AppUser appUser; //es de tipo AppUser porque representa la relación entre las 2 entidades con un string no se estaría relacionando

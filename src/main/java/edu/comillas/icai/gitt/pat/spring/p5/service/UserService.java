@@ -24,37 +24,86 @@ import java.util.Optional;
 @Service
 public class UserService implements UserServiceInterface {
 
+    @Autowired
+    private AppUserRepository appUserRepository;
+    @Autowired
+    private TokenRepository tokenRepository;
+
     public Token login(String email, String password) {
-        AppUser appUser = null;
-        if (appUser == null) return null;
+        AppUser appUser = appUserRepository.findByEmail(email); //busco por email
+        if (appUser == null || !appUser.getPassword().equals(password)) return null; //si no lo encuentra o la contraseña no coincide retorna null
 
-        Token token = null;
-        if (token != null) return token;
+        Token token = tokenRepository.findByAppUser(appUser); //devuelve el token asociado si era correcto el login
 
-        token = new Token();
-        return null;
+        if(token == null){
+            token = new Token();
+            token.setAppUser(appUser);
+            tokenRepository.save(token); // si no tiene token activo y las credenciales son correctas se debe de crear uno porque si
+            // en logout se elimina, cuando vuelv a a iniciar sesión se debe de crear uno nuevo
+
+        }
+
+        return token;
     }
 
     public AppUser authentication(String tokenId) {
-        return null;
+
+        Optional<Token> tokenOptional = tokenRepository.findById(tokenId); //Es un optional porque puede ser null
+
+        if (!tokenOptional.isPresent()) { //si no existe retorna un null
+            return null;
+        }
+
+        // Si el token está presente, obtenemos el valor y devolvemos el AppUser asociado
+        Token token = tokenOptional.get();
+        return token.getAppUser();
     }
 
     public ProfileResponse profile(AppUser appUser) {
-        return null;
+        AppUser appUsuario = appUserRepository.findByEmail(appUser.getEmail());
+        if (appUsuario == null) return null;
+        return new ProfileResponse(appUsuario.getName(),appUsuario.getEmail(),appUsuario.getRole());
     }
+
     public ProfileResponse profile(AppUser appUser, ProfileRequest profile) {
-        return null;
+
+        AppUser appUsuario = appUserRepository.findByEmail(appUser.getEmail());
+        if (appUsuario == null) return null;
+
+        appUsuario.setName(profile.name());
+        appUsuario.setRole(profile.role());
+        appUsuario.setPassword(profile.password());
+        appUserRepository.save(appUsuario); //Si existe en la base de datos actualiza el usuario con esa ID que es la clave primaria
+        return new ProfileResponse(appUsuario.getName(),appUsuario.getEmail(),appUsuario.getRole());
+
     }
     public ProfileResponse profile(RegisterRequest register) {
-        return null;
+
+        AppUser existingUser = appUserRepository.findByEmail(register.email());
+        if (existingUser != null)  throw new IllegalArgumentException("El usuario con este email ya está registrado.");; //el usuario estaría registrado
+
+        AppUser appUser = new AppUser();
+        appUser.setName(register.name());
+        appUser.setEmail(register.email());
+        appUser.setRole(register.role());
+        appUser.setPassword(register.password());
+
+        appUserRepository.save(appUser);//lo guarda en base de datos
+        return new ProfileResponse(appUser.getName(),appUser.getEmail(),appUser.getRole());
     }
 
     public void logout(String tokenId) {
 
+        Optional<Token> tokenOptional = tokenRepository.findById(tokenId);
+        if (tokenOptional.isPresent()) {
+            tokenRepository.delete(tokenOptional.get());//si el token existe lo eliminamos para cerrar sesion
+        }else {
+            throw new IllegalArgumentException("Token no encontrado");
+        }
     }
 
     public void delete(AppUser appUser) {
-
+        appUserRepository.delete(appUser);
     }
 
 }

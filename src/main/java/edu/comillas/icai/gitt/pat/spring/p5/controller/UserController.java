@@ -30,7 +30,7 @@ public class UserController {
     @Autowired UserServiceInterface userService;
 
     @PostMapping("/api/users")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.CREATED) //Registra un usuario
     public ProfileResponse register(@Valid @RequestBody RegisterRequest register) {
         try {
             return userService.profile(register);
@@ -39,7 +39,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/api/users/me/session")
+    @PostMapping("/api/users/me/session") //login de usuario
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest credentials) {
         Token token = userService.login(credentials.email(), credentials.password());
         if (token == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/me/session")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT) //logout del usuario entonces se borra su token de sesion
     public ResponseEntity<Void> logout(@CookieValue(value = "session", required = true) String session) {
         AppUser appUser = userService.authentication(session);
         if (appUser == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -69,7 +69,7 @@ public class UserController {
     }
 
     @GetMapping("/api/users/me")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK) //Ver sus datos
     public ProfileResponse profile(@CookieValue(value = "session", required = true) String session) {
         AppUser appUser = userService.authentication(session);
         if (appUser == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -77,7 +77,7 @@ public class UserController {
     }
 
     @PutMapping("/api/users/me")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK) //actualizar sus datos
     public ProfileResponse update(@RequestBody ProfileRequest profile, @CookieValue(value = "session", required = true) String session) {
         AppUser appUser = userService.authentication(session);
         if (appUser == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -85,7 +85,7 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/me")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT) //borrar sus datos
     public void delete(@CookieValue(value = "session", required = true) String session) {
         AppUser appUser = userService.authentication(session);
         if (appUser == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
