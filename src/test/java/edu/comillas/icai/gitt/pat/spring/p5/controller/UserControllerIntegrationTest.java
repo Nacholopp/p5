@@ -54,11 +54,18 @@ class UserControllerIntegrationTest {
      * (no cumple condiciones)
      */
     @Test void registerInvalidPassword() throws Exception {
-        // Given ...
-
-        // When ...
-
-                // Then ...
-
+        // Given: una contraseña que no cumple con el patrón
+        String invalidRequest = "{" +
+                "\"name\":\"" + NAME + "\"," +
+                "\"email\":\"" + EMAIL + "\"," +
+                "\"role\":\"" + Role.USER + "\"," +
+                "\"password\":\"mal\"}"; // inválido
+        // When
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest)) //Simula un post con mockito
+                // Then esperamos que el servidor de un badRequest como se vio en la tabla del readme
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }

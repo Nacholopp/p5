@@ -4,6 +4,7 @@ import edu.comillas.icai.gitt.pat.spring.p5.model.Role;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -24,8 +25,11 @@ class P5ApplicationE2ETest {
     private static final String EMAIL = "name@email.com";
     private static final String PASS = "aaaaaaA1";
 
+
     @Autowired
     TestRestTemplate client;
+    @Autowired
+    private RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
     @Test public void registerTest() {
         // Given ...
@@ -56,13 +60,39 @@ class P5ApplicationE2ETest {
      * Completa el siguiente test E2E para que verifique la
      * respuesta de login cuando se proporcionan credenciales correctas
      */
-    @Test public void loginOkTest() {
-        // Given ...
+    @Test
+    public void loginOkTest() {
+        //Given: Registramos un usuario primero
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String registro = "{" +
+                "\"name\":\"" + NAME + "\"," +
+                "\"email\":\"" + EMAIL + "\"," +
+                "\"role\":\"" + Role.USER + "\"," +
+                "\"password\":\"" + PASS + "\"}";
 
-        // When ...
+        ResponseEntity<String> registerResponse = client.exchange(
+                "http://localhost:8080/api/users",
+                HttpMethod.POST, new HttpEntity<>(registro, headers), String.class);
 
+        Assertions.assertEquals(HttpStatus.CREATED, registerResponse.getStatusCode());
 
-        // Then ...
+        // When Hacemos login con las credenciales correctas
+        String loginBody = "{" +
+                "\"email\":\"" + EMAIL + "\"," +
+                "\"password\":\"" + PASS + "\"}";
 
+        ResponseEntity<Void> loginResponse = client.exchange(
+                "http://localhost:8080/api/users/me/session",
+                HttpMethod.POST, new HttpEntity<>(loginBody, headers), Void.class);
+
+        //Then Comprobamos la cookie de sesión
+        Assertions.assertEquals(HttpStatus.CREATED, loginResponse.getStatusCode());
+
+        String setCookie = loginResponse.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
+        Assertions.assertNotNull(setCookie);
+        Assertions.assertTrue(setCookie.contains("session="));
     }
+
+
 }

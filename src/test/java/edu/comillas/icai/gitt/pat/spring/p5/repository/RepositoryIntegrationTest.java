@@ -21,15 +21,34 @@ class RepositoryIntegrationTest {
      * definidas respectivamente en ellos retornan el token y usuario guardados.
      */
     @Test void saveTest() {
-        // Given ...
+        // Given: creamos un usuario y lo guardamos
         AppUser user = new AppUser();
+        user.setName("UserTest");
+        user.setEmail("test@gmail.com");
+        user.setRole(Role.USER);
+        user.setPassword("Test123456");
+
+        appUserRepository.save(user);
+
+
         Token token = new Token();
+        token.setAppUser(user);
 
-        // When ...
+        tokenRepository.save(token);
 
-        // Then ...
+        // When: buscamos el usuario por email y el token por usuario
+        AppUser retrievedUser = appUserRepository.findByEmail("test@gmail.com");
+        Token retrievedToken = tokenRepository.findByAppUser(user); //Retrieved de CRUD
 
+        // Then: comprobamos que los datos se guardaron y se pueden recuperar correctamente
+        Assertions.assertNotNull(retrievedUser); //Verifica que no es null
+        Assertions.assertEquals("UserTest", retrievedUser.getName()); //Verifica que coincide
+        Assertions.assertEquals("test@gmail.com", retrievedUser.getEmail()); //
+
+        Assertions.assertNotNull(retrievedToken);
+        Assertions.assertEquals(user.getId(), retrievedToken.getAppUser().getId());
     }
+
 
     /**
      * TODO#10
@@ -37,12 +56,23 @@ class RepositoryIntegrationTest {
      * cuando se borra un usuario, automáticamente se borran sus tokens asociados.
      */
     @Test void deleteCascadeTest() {
-        // Given ...
+        // Given creamos un usuario y lo guardamos con su token
+        AppUser user = new AppUser();
+        user.setName("UserTest");
+        user.setEmail("test@gmail.com");
+        user.setRole(Role.USER);
+        user.setPassword("Test123456");
 
-        // When ...
+        appUserRepository.save(user);
 
-        // Then ...
+        Token token = new Token();
+        token.setAppUser(user);
+
+        tokenRepository.save(token);
+        // When borramos usuario
+        appUserRepository.delete(user);
+        // Then verificamos que el usuario y token se han eliminado
         Assertions.assertEquals(0, appUserRepository.count());
-
+        Assertions.assertEquals(0, tokenRepository.count());
     }
 }

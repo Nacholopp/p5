@@ -9,6 +9,8 @@ function compruebaPass() {
 
 function registrarUsuario(datosJsonFormulario) {
   if (!compruebaPass()) return;
+  //delete datosJsonFormulario.password2;
+  //console.log("📤 Enviando:", datosJsonFormulario);
   fetch('/api/users', {method: 'post', body: datosJsonFormulario, headers: {'content-type': 'application/json'}})
     .then(response => {
       if (response.ok) location.href = 'login.html?registrado';

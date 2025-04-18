@@ -36,5 +36,33 @@ class RegisterRequestUnitTest {
         assertTrue(violations.isEmpty());
     }
 
+    @Test
+    public void testInvalidEmail(){
+        //Given un email inálido
+        RegisterRequest registro = new RegisterRequest(
+                "Ignacio","nachoGmail.com",
+                Role.USER, "Nacho1234");
+        //When
+        Set<ConstraintViolation<RegisterRequest>> violations = validator.validate(registro);
+        // Then Debe haber una violación por el email
+        assertEquals(1, violations.size()); //que la violación sea de un solo campo y del campo email
+        assertTrue(violations.iterator().next().getPropertyPath().toString().equals("email"));
+    }
+
+    @Test
+    public void testInvalidPassword(){
+        //Given un email inálido
+        RegisterRequest registro = new RegisterRequest(
+                "Ignacio","nacho@Gmail.com",
+                Role.USER, "mal");
+        //When
+        Set<ConstraintViolation<RegisterRequest>> violations = validator.validate(registro);
+        // Then Debe haber una violación por el password
+        assertEquals(1, violations.size()); //que la violación sea de un solo campo y del campo password
+        assertTrue(violations.iterator().next().getPropertyPath().toString().equals("password"));
+    }
+
+
+
 
 }

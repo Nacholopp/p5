@@ -28,10 +28,12 @@ public class UserService implements UserServiceInterface {
     private AppUserRepository appUserRepository;
     @Autowired
     private TokenRepository tokenRepository;
+    @Autowired
+    private Hashing hashing;
 
     public Token login(String email, String password) {
         AppUser appUser = appUserRepository.findByEmail(email); //busco por email
-        if (appUser == null || !appUser.getPassword().equals(password)) return null; //si no lo encuentra o la contraseña no coincide retorna null
+        if (appUser == null ||  !hashing.compare(appUser.getPassword(), password)) return null;//!appUser.getPassword().equals(password)) return null; //si no lo encuentra o la contraseña no coincide retorna null
 
         Token token = tokenRepository.findByAppUser(appUser); //devuelve el token asociado si era correcto el login
 
@@ -72,7 +74,8 @@ public class UserService implements UserServiceInterface {
 
         appUsuario.setName(profile.name());
         appUsuario.setRole(profile.role());
-        appUsuario.setPassword(profile.password());
+        appUsuario.setPassword(hashing.hash(profile.password()));
+        //appUsuario.setPassword(profile.password());
         appUserRepository.save(appUsuario); //Si existe en la base de datos actualiza el usuario con esa ID que es la clave primaria
         return new ProfileResponse(appUsuario.getName(),appUsuario.getEmail(),appUsuario.getRole());
 
@@ -86,7 +89,8 @@ public class UserService implements UserServiceInterface {
         appUser.setName(register.name());
         appUser.setEmail(register.email());
         appUser.setRole(register.role());
-        appUser.setPassword(register.password());
+        //appUser.setPassword(register.password());
+        appUser.setPassword(hashing.hash(register.password()));
 
         appUserRepository.save(appUser);//lo guarda en base de datos
         return new ProfileResponse(appUser.getName(),appUser.getEmail(),appUser.getRole());

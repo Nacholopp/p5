@@ -4,24 +4,31 @@
 
 ### Create user
 
-POST http://localhost:8080/...
+POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-  ...
+  "name": "Nacho",
+  "email": "nacho@gmail.com",
+  "role": "USER",
+  "password": "Nacho123456"
 }
+
 
 ### Login
 
-... http://localhost:8080/...
+POST http://localhost:8080/api/users/me/session
 Content-Type: application/json
 
 {
-  ...
+  "email": "nacho@gmail.com",
+  "password": "Nacho123456"
 }
+
 
 ### Profile
 
-... http://localhost:8080/...
-Cookie: session=...
+GET http://localhost:8080/api/users/me
+Cookie: session=6f09b014-b86d-4e8b-8a89-3a167e759ec6;
+
 
