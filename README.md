@@ -11,11 +11,11 @@ a los usuarios leer, modificar y borrar sus datos. También existe un endpoint p
 | Método | Ruta          | Descripción                                                                      | Respuestas                                |
 |--------|---------------|----------------------------------------------------------------------------------|-------------------------------------------|
 | POST   | /api/users    | Registrar un nuevo User                                                          | 201 created , 400 Bad Request             |
-| POST   | /api/users/me/session    | Inicia sesión a un usuario y crea y devuelve la cookie de sesion                 | 200 OK , 401 Unauthorized                 |
-| POST   | /api/logout   | Cierra sesion y elimina la cookie (es post porque cambia el estado de la sesion) | 200 OK  , 401 Unauthorized                |
-| GET    | /api/user     | Obtiene los datos del usuario autenticado                                        | 200 OK  , 401 Unauthorized                |
-| PUT    | /api/user     | Modifica los datos de un usuario                                                 | 200 OK, 400 Bad Request ,401 Unauthorized |
-| DELETE | /api/user     | Borra sus datos                                                                  | 204 No Content , 401 Unauthorized         |
+| POST   | /api/users/me/session    | Inicia sesión a un usuario y crea la cookie de sesion  y devuelve el status              | 200 OK , 401 Unauthorized                 |
+| DELETE   | /api/users/me/session  | Cierra sesion y elimina la cookie (token) de sesión | 200 OK  , 401 Unauthorized                |
+| GET    | /api/users/me     | Obtiene los datos del usuario autenticado                                        | 200 OK  , 401 Unauthorized                |
+| PUT    | /api/users/me     | Modifica los datos de un usuario autenticado                                                 | 200 OK, 400 Bad Request ,401 Unauthorized |
+| DELETE | /api/user/me    | Borra sus datos y en cascada la cookie de session                                                              | 204 No Content , 401 Unauthorized         |
 
 
 ## Comandos 
